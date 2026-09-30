@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analisador Fundamentalista</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .busca {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .resultado {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .titulo {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .valor {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .observacao {
+      margin-top: 20px;
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>📊 Analisador Fundamentalista</h1>
+
+  <div class="busca">
+    <input
+      type="text"
+      id="ticker"
+      placeholder="Digite o ticker. Ex.: ITSA4"
+    >
+
+    <button onclick="analisar()">
+      Analisar empresa
+    </button>
+  </div>
+
+  <div class="resultado">
+
+    <div class="card">
+      <div class="titulo">ROE</div>
+      <div class="valor" id="roe">--</div>
+    </div>
+
+    <div class="card">
+      <div class="titulo">P/VP</div>
+      <div class="valor" id="pvp">--</div>
+    </div>
+
+    <div class="card">
+      <div class="titulo">ROE / P/VP</div>
+      <div class="valor" id="roePvp">--</div>
+    </div>
+
+    <div class="card">
+      <div class="titulo">LPA</div>
+      <div class="valor" id="lpa">--</div>
+    </div>
+
+    <div class="card">
+      <div class="titulo">Preço atual</div>
+      <div class="valor" id="preco">--</div>
+    </div>
+
+    <div class="card">
+      <div class="titulo">Preço justo</div>
+      <div class="valor" id="precoJusto">--</div>
+    </div>
+
+  </div>
+
+  <div class="observacao">
+    <strong>Margem de Segurança</strong>
+    <p id="mos">Aguardando análise...</p>
+  </div>
+
+</div>
+
+<script>
+
+function analisar() {
+
+  const ticker = document
+    .getElementById("ticker")
+    .value
+    .toUpperCase()
+    .trim();
+
+  if (!ticker) {
+    alert("Digite um ticker.");
+    return;
+  }
+
+  /*
+    Dados provisórios.
+    Depois vamos substituir por dados reais
+    da B3/API e pelos cálculos do nosso modelo.
+  */
+
+  const dados = {
+    ITSA4: {
+      roe: 18.0,
+      pvp: 1.25,
+      lpa: 1.10,
+      preco: 12.80,
+      precoJusto: 15.00
+    },
+
+    SAPR4: {
+      roe: 12.0,
+      pvp: 0.85,
+      lpa: 0.99,
+      preco: 6.84,
+      precoJusto: 8.00
+    },
+
+    BBDC3: {
+      roe: 16.0,
+      pvp: 0.90,
+      lpa: 1.20,
+      preco: 13.00,
+      precoJusto: 15.00
+    }
+  };
+
+  const empresa = dados[ticker];
+
+  if (!empresa) {
+    alert(
+      "Empresa ainda não cadastrada. " +
+      "Por enquanto teste ITSA4, SAPR4 ou BBDC3."
+    );
+    return;
+  }
+
+  document.getElementById("roe").textContent =
+    empresa.roe.toFixed(2) + "%";
+
+  document.getElementById("pvp").textContent =
+    empresa.pvp.toFixed(2);
+
+  const roePvp = empresa.roe / empresa.pvp;
+
+  document.getElementById("roePvp").textContent =
+    roePvp.toFixed(2);
+
+  document.getElementById("lpa").textContent =
+    "R$ " + empresa.lpa.toFixed(2);
+
+  document.getElementById("preco").textContent =
+    "R$ " + empresa.preco.toFixed(2);
+
+  document.getElementById("precoJusto").textContent =
+    "R$ " + empresa.precoJusto.toFixed(2);
+
+  const mos =
+    (1 - empresa.preco / empresa.precoJusto) * 100;
+
+  document.getElementById("mos").textContent =
+    mos.toFixed(1) +
+    "% de margem de segurança em relação ao preço justo.";
+}
+
+</script>
+
+</body>
+</html>
